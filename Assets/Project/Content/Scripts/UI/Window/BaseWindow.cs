@@ -1,8 +1,9 @@
 namespace Project.UI.Window
 {
+    using Cysharp.Threading.Tasks;
     using UnityEngine;
 
-    public class BaseWindow : MonoBehaviour
+    public abstract class BaseWindow : MonoBehaviour
     {
         public bool IsOpen { get; protected set; }
 
@@ -11,26 +12,27 @@ namespace Project.UI.Window
             Destroy();
         }
 
-        public virtual void Init()
-        {
+        public virtual void Init() { }
 
-        }
+        public virtual void Destroy() { }
 
-        public virtual void Destroy()
-        {
 
-        }
-
-        public virtual void Show()
+        public virtual UniTask Show()
         {
             IsOpen = true;
-            this.gameObject.SetActive(true);
+            gameObject.SetActive(true);
+
+            return UniTask.CompletedTask;
         }
 
-        public virtual void Hide()
+        public virtual UniTask Hide()
         {
             IsOpen = false;
             this.gameObject.SetActive(false);
+
+            return UniTask.CompletedTask;
         }
+
+        public virtual void SetParams(params object[] objs) { }
     }
 }

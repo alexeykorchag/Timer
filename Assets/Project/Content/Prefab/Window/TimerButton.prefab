@@ -273,6 +273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   format: "\u0422\u0430\u0439\u043C\u0435\u0440 {0}"
   _textOnButton: {fileID: 1795750987203239297}
+  _btn: {fileID: 1795750987229305009}
 --- !u!225 &7443882627521040280
 CanvasGroup:
   m_ObjectHideFlags: 0

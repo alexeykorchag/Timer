@@ -1,8 +1,11 @@
 namespace Project.UI.Window
 {
     using DG.Tweening;
-    using UnityEngine;
+    using System;
+    using Cysharp.Threading.Tasks;
     using TMPro;
+    using UnityEngine;
+    using UnityEngine.UI;
 
     public class TimerButton : MonoBehaviour
     {
@@ -12,33 +15,55 @@ namespace Project.UI.Window
         [SerializeField]
         private TMP_Text _textOnButton;
 
-        private int _index;
+        [SerializeField]
+        private Button _btn;
+
+        public event Action<TimerData> Click;
+
+        private TimerData _data;
         private ITimerButtonAnimation _buttonAnimation;
 
-        public void Init(int index)
+        public void Init(TimerData data)
         {
-            _index = index;
-            _buttonAnimation = new TimerButtonAnimation(_index, this.GetComponent<RectTransform>(), this.GetComponent<CanvasGroup>());
+            _data = data;
+            _buttonAnimation = new TimerButtonAnimation(_data.Index, this.GetComponent<RectTransform>(), this.GetComponent<CanvasGroup>());
 
-            _textOnButton.text = string.Format(format, index);
+            _textOnButton.text = string.Format(format, _data.Index);
         }
 
-        public void Show()
+        public async UniTask Show()
         {
-            _buttonAnimation.Show();
+            _data.OnOver += OnOver;
+            _btn.onClick.AddListener(OnClick);
+
+            await _buttonAnimation.Show();
         }
 
-        public void Hide()
+        public async UniTask Hide()
         {
-            _buttonAnimation.Hide();
+            _data.OnOver -= OnOver;
+            _btn.onClick.RemoveListener(OnClick);
+
+            await _buttonAnimation.Hide();
+        }
+
+        private void OnOver()
+        {
+
+        }
+
+        private void OnClick()
+        {
+            Click?.Invoke(_data);
         }
     }
 
 
     public interface ITimerButtonAnimation
     {
-        void Show();
-        void Hide();
+        UniTask Show();
+        UniTask Hide();
+        void Over();
     }
 
 
@@ -61,7 +86,7 @@ namespace Project.UI.Window
             _canvasGroup = canvasGroup;
         }
 
-        public void Show()
+        public async UniTask Show()
         {
             var delay = _delay * _index;
 
@@ -73,15 +98,27 @@ namespace Project.UI.Window
             _sequence = DOTween.Sequence()
             .Insert(delay, _rectTransform.DOAnchorPosX(0, _duration))
             .Insert(delay, _canvasGroup.DOFade(1, _duration));
+
+            await _sequence.AsyncWaitForCompletion();
         }
 
-        public void Hide()
+        public async UniTask Hide()
         {
             _sequence?.Kill();
 
             _sequence = DOTween.Sequence()
             .Insert(0, _rectTransform.DOAnchorPosX(_outPosition, _duration))
             .Insert(0, _canvasGroup.DOFade(0, _duration));
+
+            await _sequence.AsyncWaitForCompletion();
+        }
+
+        public void Over()
+        {
+            _sequence?.Kill();
+
+            _sequence = DOTween.Sequence()
+            .Insert(0, _rectTransform.DOShakeScale(_duration));
         }
     }
 }

@@ -5,9 +5,24 @@ namespace Project.UI
     using System;
     using System.Collections.Generic;
     using UnityEngine;
+    using Cysharp.Threading.Tasks;
 
     public class UIController : MonoBehaviour
     {
+
+        private static UIController _instance;
+
+        public static UIController Inctance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = FindObjectOfType<UIController>();
+                return _instance;
+            }
+        }
+
+
         [SerializeField]
         private UISettings settings;
 
@@ -52,15 +67,16 @@ namespace Project.UI
             return null;
         }
 
-        public T OpenWindow<T>() where T : BaseWindow
+        public async UniTask<T> OpenWindow<T>(params object[] objs) where T : BaseWindow
         {
+
             var targetWindow = GetWindow<T>();
             if (targetWindow == null) throw new Exception($"UIController not found window:{typeof(T).ToString()}");
 
-            return OpenWindow(targetWindow);
+            return await OpenWindow(targetWindow, objs);
         }
 
-        public T OpenWindow<T>(T targetWindow) where T : BaseWindow
+        public async UniTask<T> OpenWindow<T>(T targetWindow, params object[] objs) where T : BaseWindow
         {
             foreach (var window in _dictWindowsByType.Values)
             {
@@ -68,10 +84,11 @@ namespace Project.UI
                 if (!window.IsOpen) continue;
                 if (window == targetWindow) continue;
 
-                window.Hide();
+                await window.Hide();
             }
 
-            targetWindow.Show();
+            targetWindow.SetParams(objs);
+            await targetWindow.Show();
 
             return targetWindow;
         }

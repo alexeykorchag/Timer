@@ -1,15 +1,21 @@
 namespace Project.UI.Window
 {
     using System.Collections.Generic;
+    using Cysharp.Threading.Tasks;
     using UnityEngine;
 
     public class MainWindow : BaseWindow
     {
+
+        private TimeController _timeController;
+
+        [Header("Timer")]
         [SerializeField]
         private RectTransform _btnTimerRoot;
         [SerializeField]
         private TimerButton _btnTimerPrefab;
 
+        [Space]
         [SerializeField]
         private float _paddingTop;
         [SerializeField]
@@ -18,12 +24,14 @@ namespace Project.UI.Window
         private float _spacing;
 
 
-
         private List<TimerButton> _timerBtns = new List<TimerButton>();
+
 
         public override void Init()
         {
             base.Init();
+
+            _timeController = TimeController.Inctance;
 
             for (var i = 0; i < 3; i++)
             {
@@ -32,17 +40,31 @@ namespace Project.UI.Window
 
         }
 
-        public override void Show()
-        {
-            base.Show();
 
-            foreach (var timerBtn in _timerBtns)
-                timerBtn.Show();
+        public override async UniTask Show()
+        {
+            await base.Show();
+
+            var tasks = new UniTask[_timerBtns.Count];
+            for (var i = 0; i < _timerBtns.Count; i++)
+            {
+                _timerBtns[i].Click += OnClickTimerButton;
+                tasks[i] = _timerBtns[i].Show();
+            }
+            await UniTask.WhenAll(tasks);
         }
 
-        public override void Hide()
+        public override async UniTask Hide()
         {
-            base.Hide();
+            var tasks = new UniTask[_timerBtns.Count];
+            for (var i = 0; i < _timerBtns.Count; i++)
+            {
+                _timerBtns[i].Click -= OnClickTimerButton;
+                tasks[i] = _timerBtns[i].Hide();
+            }
+            await UniTask.WhenAll(tasks);
+
+            await base.Hide();
         }
 
         private TimerButton CreateTimerButton()
@@ -51,11 +73,17 @@ namespace Project.UI.Window
 
             _timerBtns.Add(btnTimer);
 
-            btnTimer.Init(_timerBtns.Count);
+            var data = _timeController.GetTimer(_timerBtns.Count);
+            btnTimer.Init(data);
 
             UpdateContentSize();
 
             return btnTimer;
+        }
+
+        private async void OnClickTimerButton(TimerData timerData)
+        {
+           await UIController.Inctance.OpenWindow<TimerWindow>(timerData);
         }
 
         private void UpdateContentSize()
@@ -73,5 +101,6 @@ namespace Project.UI.Window
 
             _btnTimerRoot.sizeDelta = new Vector2(_btnTimerRoot.sizeDelta.x, contentH);
         }
+
     }
 }
