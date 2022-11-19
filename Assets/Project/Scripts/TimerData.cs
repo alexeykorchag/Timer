@@ -6,7 +6,7 @@ namespace Project
     {
         public int Index { get; private set; }
 
-        //TODO: тут заменить состояниe на emum
+        //TODO: replace state with emum
         public bool IsStarted { get; private set; }
         public bool IsFinished { get; private set; }
 

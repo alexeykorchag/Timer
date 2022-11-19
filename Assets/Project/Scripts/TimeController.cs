@@ -5,8 +5,8 @@ namespace Project
     using UnityEngine;
 
     public class TimeController : MonoBehaviour
-    { 
-        //TODO: запускать и останавливать таймер только при необходимости
+    {
+        //TODO: start and stop the timer only when needed
 
         private Dictionary<int, TimerData> _timerData = new Dictionary<int, TimerData>();
         private Coroutine _coroutineUpdateTimer;

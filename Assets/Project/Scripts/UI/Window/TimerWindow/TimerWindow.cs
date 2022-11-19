@@ -149,7 +149,7 @@ namespace Project.UI.Window
         private readonly RectTransform _rectTransform;
         private readonly CanvasGroup _canvasGroup;
 
-        //TODO: вынести параметры для non code конфигурирования
+        //TODO: take out parameters for non-code configuration
         private static readonly float _outPosition = Screen.width / 2f;
         private static readonly float _duration = 1;
 

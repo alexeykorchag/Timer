@@ -59,7 +59,7 @@ namespace Project.UI.Window
         }
     }
 
-    //TODO: анимация сделанно через интерйес для легой замены реализации
+    //TODO: animation done via interface for easy implementation replacement
     public interface ITimerButtonAnimation
     {
         UniTask Show();
@@ -73,7 +73,7 @@ namespace Project.UI.Window
         private readonly RectTransform _rectTransform;
         private readonly CanvasGroup _canvasGroup;
 
-        //TODO: вынести параметры для non code конфигурирования
+        //TODO: take out parameters for non-code configuration
         private static readonly float _outPosition = -Screen.width / 2f;
         private static readonly float _duration = 1;
         private static readonly float _delay = 0.1f;
