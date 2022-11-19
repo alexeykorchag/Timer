@@ -1,16 +1,19 @@
 namespace Project.UI.Window
 {
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
-    using TMPro;
     using Cysharp.Threading.Tasks;
+    using DG.Tweening;
     using System;
     using System.Collections;
-    using DG.Tweening;
+    using TMPro;
+    using UnityEngine;
+    using UnityEngine.UI;
+    using Zenject;
 
     public class TimerWindow : BaseWindow
     {
+        [Inject]
+        private UIController uiController;
+
         [SerializeField]
         private TMP_Text _textTime;
 
@@ -46,10 +49,8 @@ namespace Project.UI.Window
             _data = objs[0] as TimerData;
         }
 
-        public override async UniTask Show()
+        public override async UniTask AfterShow()
         {
-            await base.Show();
-
             _buttonClose.onClick.AddListener(ClickClose);
             
             _buttonStart.onClick.AddListener(ClickStart);
@@ -72,7 +73,7 @@ namespace Project.UI.Window
             await _animation.Show();
         }
 
-        public override async UniTask Hide()
+        public override async UniTask BeforeHide()
         {
             _buttonClose.onClick.RemoveListener(ClickClose);
 
@@ -87,20 +88,19 @@ namespace Project.UI.Window
             _data.OnTimeSpanChanged -= UpdateVisual;
 
             await _animation.Hide();
-            await base.Hide();
         }
 
         private void OnDownDecrease()
         {
-            _data.Decrease(GetTimeSpanFromCurve(_buttonDecrease.PressTime));            
+            _data.Decrease(GetTimeSpanFromCurve(_buttonDecrease));            
         }
 
         private void OnDownIncrease()
         {
-            _data.Increase(GetTimeSpanFromCurve(_buttonIncrease.PressTime));
+            _data.Increase(GetTimeSpanFromCurve(_buttonIncrease));
         }
 
-        private TimeSpan GetTimeSpanFromCurve(float t) => TimeSpan.FromSeconds(_curve.Evaluate(t));
+        private TimeSpan GetTimeSpanFromCurve(ButtonPressExtension btn) => TimeSpan.FromSeconds(_curve.Evaluate(btn.PressTime));
 
         private void ClickStart()
         {
@@ -111,7 +111,7 @@ namespace Project.UI.Window
 
         private void ClickClose()
         {
-            UIController.Inctance.OpenWindow<MainWindow>();
+            uiController.OpenWindow<MainWindow>();
         }
 
         private void UpdateVisual()
@@ -149,9 +149,9 @@ namespace Project.UI.Window
         private readonly RectTransform _rectTransform;
         private readonly CanvasGroup _canvasGroup;
 
+        //TODO: вынести параметры для non code конфигурирования
         private static readonly float _outPosition = Screen.width / 2f;
         private static readonly float _duration = 1;
-        private static readonly float _delay = 0.1f;
 
         private Sequence _sequence;
 

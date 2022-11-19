@@ -1,8 +1,8 @@
 namespace Project.UI.Window
 {
+    using Cysharp.Threading.Tasks;
     using DG.Tweening;
     using System;
-    using Cysharp.Threading.Tasks;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
@@ -55,10 +55,11 @@ namespace Project.UI.Window
         private void OnClick()
         {
             Click?.Invoke(_data);
+        
         }
     }
 
-
+    //TODO: анимация сделанно через интерйес для легой замены реализации
     public interface ITimerButtonAnimation
     {
         UniTask Show();
@@ -66,13 +67,13 @@ namespace Project.UI.Window
         void Finish();
     }
 
-
     public class TimerButtonAnimation : ITimerButtonAnimation
     {
         private readonly int _index;
         private readonly RectTransform _rectTransform;
         private readonly CanvasGroup _canvasGroup;
 
+        //TODO: вынести параметры для non code конфигурирования
         private static readonly float _outPosition = -Screen.width / 2f;
         private static readonly float _duration = 1;
         private static readonly float _delay = 0.1f;

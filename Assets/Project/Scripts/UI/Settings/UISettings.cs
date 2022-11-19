@@ -1,6 +1,7 @@
 namespace Project.UI.Settings
 {
     using Project.UI.Window;
+    using System.Collections.Generic;
     using UnityEngine;
 
     [CreateAssetMenu(fileName = "UISettings", menuName = "Settings/UI/UISettings")]
@@ -13,7 +14,7 @@ namespace Project.UI.Settings
         private BaseWindow[] windows;
 
         public BaseWindow DefaultWindow => defaultWindow;
-        public BaseWindow[] Windows => windows;
+        public IReadOnlyCollection<BaseWindow> Windows => windows;
     }
 }
 

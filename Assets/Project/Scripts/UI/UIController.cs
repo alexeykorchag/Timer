@@ -1,27 +1,17 @@
 namespace Project.UI
 {
+    using Cysharp.Threading.Tasks;
     using Project.UI.Settings;
     using Project.UI.Window;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
-    using Cysharp.Threading.Tasks;
+    using Zenject;
 
     public class UIController : MonoBehaviour
     {
-
-        private static UIController _instance;
-
-        public static UIController Inctance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<UIController>();
-                return _instance;
-            }
-        }
-
+        [Inject]
+        private UIFactory _uiFactory;
 
         [SerializeField]
         private UISettings settings;
@@ -29,7 +19,7 @@ namespace Project.UI
         [SerializeField]
         private Transform root;
 
-        private readonly Dictionary<int, BaseWindow> _dictWindowsByType = new Dictionary<int, BaseWindow>();
+        private readonly Dictionary<Type, BaseWindow> _dictWindowsByType = new Dictionary<Type, BaseWindow>();
 
         void Start()
         {
@@ -43,33 +33,30 @@ namespace Project.UI
                 if (window == null) continue;
 
                 var windowType = window.GetType();
-                var hashCode = windowType.GetHashCode();
 
-                if (_dictWindowsByType.ContainsKey(hashCode))
+                if (_dictWindowsByType.ContainsKey(windowType))
                     throw new System.Exception($"UIController duplicate window:{windowType}");
 
-                var newWindowObject = Instantiate(window.gameObject, root);
-                var newWindow = newWindowObject.GetComponent<BaseWindow>();
+                var newWindow = _uiFactory.Create(window.gameObject, root);
 
-                _dictWindowsByType.Add(hashCode, newWindow);
+                _dictWindowsByType.Add(windowType, newWindow);
 
                 newWindow.Init();
             }
 
-            OpenWindow(_dictWindowsByType[settings.DefaultWindow.GetType().GetHashCode()]);
+            OpenWindow(_dictWindowsByType[settings.DefaultWindow.GetType()]);
         }
 
         public T GetWindow<T>() where T : BaseWindow
         {
-            var hashCode = typeof(T).GetHashCode();
-            if (_dictWindowsByType.TryGetValue(hashCode, out var window))
+            var windowType = typeof(T);
+            if (_dictWindowsByType.TryGetValue(windowType, out var window))
                 return window as T;
             return null;
         }
 
         public async UniTask<T> OpenWindow<T>(params object[] objs) where T : BaseWindow
         {
-
             var targetWindow = GetWindow<T>();
             if (targetWindow == null) throw new Exception($"UIController not found window:{typeof(T).ToString()}");
 

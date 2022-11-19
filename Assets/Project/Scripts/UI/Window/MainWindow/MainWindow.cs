@@ -3,13 +3,19 @@ namespace Project.UI.Window
     using System.Collections.Generic;
     using Cysharp.Threading.Tasks;
     using UnityEngine;
+    using Zenject;
 
     public class MainWindow : BaseWindow
     {
-
+        [Inject]
+        private UIController uiController;       
+        [Inject]
         private TimeController _timeController;
 
+
         [Header("Timer")]
+        [SerializeField]
+        private int _btnOnStart = 3;
         [SerializeField]
         private RectTransform _btnTimerRoot;
         [SerializeField]
@@ -23,28 +29,16 @@ namespace Project.UI.Window
         [SerializeField]
         private float _spacing;
 
-
         private List<TimerButton> _timerBtns = new List<TimerButton>();
-
 
         public override void Init()
         {
-            base.Init();
-
-            _timeController = TimeController.Inctance;
-
-            for (var i = 0; i < 3; i++)
-            {
-                CreateTimerButton();
-            }
-
+            for (var i = 0; i < _btnOnStart; i++)            
+                CreateTimerButton();            
         }
 
-
-        public override async UniTask Show()
+        public override async UniTask AfterShow()
         {
-            await base.Show();
-
             var tasks = new UniTask[_timerBtns.Count];
             for (var i = 0; i < _timerBtns.Count; i++)
             {
@@ -54,7 +48,7 @@ namespace Project.UI.Window
             await UniTask.WhenAll(tasks);
         }
 
-        public override async UniTask Hide()
+        public override async UniTask BeforeHide()
         {
             var tasks = new UniTask[_timerBtns.Count];
             for (var i = 0; i < _timerBtns.Count; i++)
@@ -63,8 +57,6 @@ namespace Project.UI.Window
                 tasks[i] = _timerBtns[i].Hide();
             }
             await UniTask.WhenAll(tasks);
-
-            await base.Hide();
         }
 
         private TimerButton CreateTimerButton()
@@ -83,7 +75,7 @@ namespace Project.UI.Window
 
         private async void OnClickTimerButton(TimerData timerData)
         {
-           await UIController.Inctance.OpenWindow<TimerWindow>(timerData);
+           await uiController.OpenWindow<TimerWindow>(timerData);
         }
 
         private void UpdateContentSize()
