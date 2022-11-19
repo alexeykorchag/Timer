@@ -20,9 +20,12 @@ namespace Project.UI.Window
         private CanvasGroup _canvasGroup;
 
         [SerializeField]
-        private Button _buttonDecrease;
+        private AnimationCurve _curve;
+
         [SerializeField]
-        private Button _buttonIncrease;
+        private ButtonPressExtension _buttonDecrease;
+        [SerializeField]
+        private ButtonPressExtension _buttonIncrease;
         [SerializeField]
         private Button _buttonStart;
         [SerializeField]
@@ -30,7 +33,7 @@ namespace Project.UI.Window
 
         private TimerData _data;
         private ITimerWindowAnimation _animation;
-
+     
 
         public override void Init()
         {
@@ -47,11 +50,16 @@ namespace Project.UI.Window
         {
             await base.Show();
 
-            _buttonDecrease.onClick.AddListener(ClickDecrease);
-            _buttonIncrease.onClick.AddListener(ClickIncrease);
-            _buttonStart.onClick.AddListener(ClickStart);
             _buttonClose.onClick.AddListener(ClickClose);
+            
+            _buttonStart.onClick.AddListener(ClickStart);
 
+            _buttonDecrease.onDown += OnDownDecrease;
+            _buttonDecrease.onPressed += OnDownDecrease;
+
+            _buttonIncrease.onDown += OnDownIncrease;
+            _buttonIncrease.onPressed += OnDownIncrease;      
+            
             _data.OnTimeSpanChanged += UpdateVisual;
 
             UpdateVisual();
@@ -60,16 +68,21 @@ namespace Project.UI.Window
             {
                 StartCoroutine(UpdateTimer());
             }
-      
+
             await _animation.Show();
         }
 
         public override async UniTask Hide()
-        {        
-            _buttonDecrease.onClick.RemoveListener(ClickDecrease);
-            _buttonIncrease.onClick.RemoveListener(ClickIncrease);
-            _buttonStart.onClick.RemoveListener(ClickStart);
+        {
             _buttonClose.onClick.RemoveListener(ClickClose);
+
+            _buttonStart.onClick.RemoveListener(ClickStart);
+
+            _buttonDecrease.onDown -= OnDownDecrease;
+            _buttonDecrease.onPressed -= OnDownDecrease;
+
+            _buttonIncrease.onDown -= OnDownIncrease;
+            _buttonIncrease.onPressed -= OnDownIncrease;
 
             _data.OnTimeSpanChanged -= UpdateVisual;
 
@@ -77,15 +90,17 @@ namespace Project.UI.Window
             await base.Hide();
         }
 
-        private void ClickDecrease()
+        private void OnDownDecrease()
         {
-            _data.Decrease(TimeSpan.FromSeconds(1));
+            _data.Decrease(GetTimeSpanFromCurve(_buttonDecrease.PressTime));            
         }
 
-        private void ClickIncrease()
+        private void OnDownIncrease()
         {
-            _data.Increase(TimeSpan.FromSeconds(1));
+            _data.Increase(GetTimeSpanFromCurve(_buttonIncrease.PressTime));
         }
+
+        private TimeSpan GetTimeSpanFromCurve(float t) => TimeSpan.FromSeconds(_curve.Evaluate(t));
 
         private void ClickStart()
         {
@@ -103,7 +118,7 @@ namespace Project.UI.Window
         {
             var timeSpan = _data.GetRemainingTime();
 
-            _textTime.text = string.Format("{0} : {1:D2} : {2:D2}", (long) Math.Floor(timeSpan.TotalHours), timeSpan.Minutes, timeSpan.Seconds) ;
+            _textTime.text = string.Format("{0} : {1:D2} : {2:D2}", (long)Math.Floor(timeSpan.TotalHours), timeSpan.Minutes, timeSpan.Seconds);
 
             _buttonDecrease.interactable = !_data.IsStarted && timeSpan > TimeSpan.Zero;
             _buttonIncrease.interactable = !_data.IsStarted;
@@ -114,11 +129,11 @@ namespace Project.UI.Window
         {
             var wfs = new WaitForSecondsRealtime(1f);
 
-            while(!_data.IsFinished)
+            while (!_data.IsFinished)
             {
                 UpdateVisual();
                 yield return wfs;
-            }           
+            }
         }
 
     }

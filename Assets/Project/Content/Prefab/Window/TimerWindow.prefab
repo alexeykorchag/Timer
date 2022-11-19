@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 9037821870415235241}
   - component: {fileID: 5879536991401032174}
   - component: {fileID: 222116611119645482}
-  - component: {fileID: 2014877305071663074}
+  - component: {fileID: 4923595403524487443}
   m_Layer: 5
   m_Name: ButtonDecrease
   m_TagString: Untagged
@@ -160,7 +160,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 3
---- !u!114 &2014877305071663074
+--- !u!114 &4923595403524487443
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2464699293451433972}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 4aabe6588885f1f4ea010329548d03d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -335,8 +335,32 @@ MonoBehaviour:
   _textTime: {fileID: 1648867670908863815}
   _panel: {fileID: 2206012089703075784}
   _canvasGroup: {fileID: 3145243837194101390}
-  _buttonDecrease: {fileID: 2014877305071663074}
-  _buttonIncrease: {fileID: 429813404863548418}
+  _curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0.8
+      outSlope: 0.8
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 5
+      value: 5
+      inSlope: 0.8
+      outSlope: 0.8
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _buttonDecrease: {fileID: 4923595403524487443}
+  _buttonIncrease: {fileID: 4283541163526030437}
   _buttonStart: {fileID: 2488489175305814934}
   _buttonClose: {fileID: 1121628806870344177}
 --- !u!1 &4526635547013172950
@@ -804,7 +828,7 @@ GameObject:
   - component: {fileID: 945546154399552246}
   - component: {fileID: 5803403696632235171}
   - component: {fileID: 7392070906556164117}
-  - component: {fileID: 429813404863548418}
+  - component: {fileID: 4283541163526030437}
   m_Layer: 5
   m_Name: ButtonIncrease
   m_TagString: Untagged
@@ -871,7 +895,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 3
---- !u!114 &429813404863548418
+--- !u!114 &4283541163526030437
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -880,7 +904,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6163118503294998206}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 4aabe6588885f1f4ea010329548d03d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
