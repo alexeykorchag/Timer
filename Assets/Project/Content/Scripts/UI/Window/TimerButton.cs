@@ -33,7 +33,7 @@ namespace Project.UI.Window
 
         public async UniTask Show()
         {
-            _data.OnOver += OnOver;
+            _data.OnFinish += OnFinish;
             _btn.onClick.AddListener(OnClick);
 
             await _buttonAnimation.Show();
@@ -41,15 +41,15 @@ namespace Project.UI.Window
 
         public async UniTask Hide()
         {
-            _data.OnOver -= OnOver;
+            _data.OnFinish -= OnFinish;
             _btn.onClick.RemoveListener(OnClick);
 
             await _buttonAnimation.Hide();
         }
 
-        private void OnOver()
+        private void OnFinish()
         {
-
+            _buttonAnimation.Finish();
         }
 
         private void OnClick()
@@ -63,7 +63,7 @@ namespace Project.UI.Window
     {
         UniTask Show();
         UniTask Hide();
-        void Over();
+        void Finish();
     }
 
 
@@ -113,12 +113,12 @@ namespace Project.UI.Window
             await _sequence.AsyncWaitForCompletion();
         }
 
-        public void Over()
+        public void Finish()
         {
             _sequence?.Kill();
 
             _sequence = DOTween.Sequence()
-            .Insert(0, _rectTransform.DOShakeScale(_duration));
+            .Insert(0, _rectTransform.DOShakeScale(_duration, 0.1f, 3, 30, true, ShakeRandomnessMode.Harmonic));
         }
     }
 }

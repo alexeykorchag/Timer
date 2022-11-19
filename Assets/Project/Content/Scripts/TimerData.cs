@@ -6,7 +6,7 @@ public class TimerData
     public bool IsStarted { get; private set; }   
     public bool IsFinished { get; private set; }
    
-    public event Action OnOver;
+
     public event Action OnTimeSpanChanged;
     public event Action OnFinish;
 

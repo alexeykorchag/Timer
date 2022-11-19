@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,8 +17,42 @@ public class TimeController : MonoBehaviour
     }
 
 
-
     private Dictionary<int, TimerData> _timerData = new Dictionary<int, TimerData>();
+    private Coroutine _coroutineUpdateTimer;
+
+    private void Awake()
+    {
+        StartTimers();
+    }
+
+    private void OnDestroy()
+    {
+        StopTimers();
+    }
+
+    private void StartTimers()
+    {
+        _coroutineUpdateTimer = StartCoroutine(UpdateTimer());
+    }
+
+    private void StopTimers()
+    {
+        StopCoroutine(_coroutineUpdateTimer);
+    }
+
+    private IEnumerator UpdateTimer()
+    {
+        var wfs = new WaitForSecondsRealtime(1f);
+
+        while (true)
+        {
+            foreach (var data in _timerData)
+                data.Value.GetRemainingTime();
+
+            yield return wfs;
+        }
+    }
+
 
     public TimerData GetTimer(int index)
     {
